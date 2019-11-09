@@ -1,0 +1,141 @@
+drop database biuro_podrozy;
+
+
+CREATE DATABASE IF NOT EXISTS biuro_podrozy,
+use biuro_podrozy;
+
+
+
+CREATE TABLE miejsce(
+         id_miejsce number(3) CONSTRAINT miejsce_pk PRIMARY KEY,
+         panstwo varchar2(20),
+         miasto varchar2(20)
+);
+
+         
+
+CREATE TABLE klient (
+        id_klient INT, 
+	pesel char(11) PRIMARY KEY,
+	imie varchar(20) NOT NULL,
+	nazwisko varchar(20) NOT NULL,
+	adres varchar(25) NOT NULL
+        
+
+);
+
+CREATE TABLE hotel_nocleg(
+	nazwa varchar(30) NOT NULL,
+	rodzaj ENUM ("Willa","Hotel","Hostel") NOT NULL,
+	wyzywienie ENUM ("Bez wyżywienia","Śniadanie","Śniadanie + obiad") NOT NULL,	
+	cena decimal(10,2) NOT NULL, 
+	adres varchar(25) NOT NULL,
+	PRIMARY KEY(nazwa)
+);
+
+CREATE TABLE oferta(
+	id_numerOferty int(4) NOT NULL,
+	nazwa varchar(100) NOT NULL,
+	skad varchar(10) NOT NULL,
+	dokad varchar(10) NOT NULL,
+	srodekTransportu  ENUM ("Autobus","Pociąg","Samolot","Prom") NOT NULL,
+	PRIMARY KEY(id_numerOferty)
+);
+CREATE TABLE atrakcja(
+        id_atrakacja  number(3) CONSTRAINT atrakcja_pk PRIMARY KEY,
+        nazwa varchar(20),
+        koszt number(4)
+
+CREATE TABLE termin(
+	id_dataWyjazdu date NOT NULL,
+	dataPowrotu date NOT NULL,
+	miejsce varchar(15) NOT NULL,
+	cena decimal(8,2) NOT NULL,
+	numerOferty int(4) NOT NULL,
+
+	PRIMARY KEY (id_dataWyjazdu,numerOferty),
+	CONSTRAINT fk_oferta_nrOferty FOREIGN KEY(numerOferty) REFERENCES oferta(numerOferty)
+);
+
+
+CREATE TABLE zakup(
+	id_numerZakupu int(4) NOT NULL,
+	suma decimal(10,2) NOT NULL,
+	pesel char(11) NOT NULL,
+
+	PRIMARY KEY(id_numerZakupu),
+
+	CONSTRAINT fk_klient_pesel FOREIGN KEY(pesel) REFERENCES klient(pesel) 
+);
+
+CREATE TABLE typOferty(
+	numerOferty int(4) NOT NULL,
+	id_nazwa varchar(30) NOT NULL,
+	PRIMARY KEY(numerOferty,id_nazwa),
+
+	CONSTRAINT fk_oferta_nrOferty_to FOREIGN KEY(numerOferty) REFERENCES oferta(numerOferty),
+	CONSTRAINT fk_nazwa_nocleg_to FOREIGN KEY(nazwa) REFERENCES nocleg(nazwa)
+);
+
+
+CREATE TABLE zakupTermin(
+	numerZakupu int(4) NOT NULL,
+	numerOferty int(4) NOT NULL,
+	dataWyjazdu date NOT NULL,
+
+
+	CONSTRAINT fk_oferta_nrOferty_zt FOREIGN KEY(numerOferty) REFERENCES oferta(numerOferty),
+	CONSTRAINT fk_zakup_nrZakupu_zt FOREIGN KEY(numerZakupu) REFERENCES zakup(numerZakupu ),
+	CONSTRAINT fk_termin_dataWyjazdu_zt  FOREIGN KEY(dataWyjazdu) REFERENCES termin(dataWyjazdu)
+);
+
+CREATE TABLE zakupTypOferty(
+	numerZakupu int(4) NOT NULL,
+	numerOferty int(4) NOT NULL,
+	nazwa varchar(30) NOT NULL,
+
+	CONSTRAINT fk_oferta_nrOferty_zto FOREIGN KEY(numerOferty) REFERENCES oferta(numerOferty),
+	CONSTRAINT fk_zakup_nrZakupu_zto FOREIGN KEY(numerZakupu) REFERENCES zakup(numerZakupu ),
+	CONSTRAINT fk_nazwa_nocleg_zto FOREIGN KEY(nazwa) REFERENCES nocleg(nazwa),
+);
+
+ --Usuwanie bazy #1
+
+DROP TABLE ZakupTypOferty CASCADE CONSTRAINTS
+/
+DROP TABLE zakupTermin CASCADE CONSTRAINTS
+/
+DROP TABLE typOferty CASCADE CONSTRAINTS
+/
+DROP TABLE zakup CASCADE CONSTRAINTS
+/
+DROP TABLE termin CASCADE CONSTRAINTS
+/
+DROP TABLE oferta CASCADE CONSTRAINTS
+/
+DROP TABLE hotel_nocleg CASCADE CONSTRAINTS
+/
+DROP TABLE klient CASCADE CONSTRAINTS
+/
+DROP TABLE miejsce CASCADE CONSTRAINTS
+/
+
+--Usuwanie bazy #2
+
+DROP TABLE IF EXISTS 'ZakupTypOferty',
+/
+DROP TABLE IF EXISTS 'zakupTermin',
+/
+DROP TABLE IF EXISTS 'typOferty',
+/
+DROP TABLE IF EXISTS 'zakup',
+/
+DROP TABLE IF EXISTS 'termin',
+/
+DROP TABLE IF EXISTS 'oferta'.
+/
+DROP TABLE IF EXISTS 'hotel_nocleg'
+/
+DROP TABLE IF EXISTS 'klient'
+/
+DROP TABLE IF EXISTS 'miejsce'
